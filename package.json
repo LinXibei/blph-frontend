@@ -4,12 +4,27 @@
   "description": "bluepha frontend",
   "main": "index.js",
   "bin": {
-    "blph-frontend": "index.js"
+    "blph-frontend": "bin/init.js"
   },
+  "files": [
+    "./bin",
+    "./src"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "gitHooks": {
+    "commit-msg": "node verify-commit-msg.js"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "commander": "^5.1.0",
+    "download-git-repo": "^3.0.2",
+    "fs-extra": "^10.0.0",
+    "inquirer": "^8.2.0",
+    "ora": "^5.4.1"
+  }
 }
