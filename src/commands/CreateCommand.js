@@ -5,7 +5,6 @@ const fs = require('fs-extra');
 const { RepoPath, Config } = require('../utils/config');
 const download = require('download-git-repo');
 const { prompt } = require('inquirer');
-const { resolve } = require('path');
 class Creator {
 	constructor(source, destination, opts = {}) {
 		this.source = source;

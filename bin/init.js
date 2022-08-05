@@ -6,7 +6,7 @@ const { CreateCommand } = require('../src/commands');
 const program = new Command();
 
 program
-  .version(package.version, '-v, --version', 'display version for vta-cli')
+  .version(package.version, '-v, --version', 'display version for blph-frontend-cli')
   .usage('<command> [options]');
 
 program
