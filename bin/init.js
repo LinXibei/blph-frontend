@@ -9,17 +9,16 @@ program
   .version(package.version, '-v, --version', 'display version for blph-frontend-cli')
   .usage('<command> [options]');
 
-program
-  .option('-y, --yes', 'run default action')
-  .option('-f, --force', 'force all the question')
+// program
+//   .option('-y, --yes', 'run default action')
+//   .option('-f, --force', 'force all the question')
 
 program
 	.command('create <name>')
   .description('create a blph-frontend template project')
   .option('-f, --force', '忽略文件夹检查，如果已存在则直接覆盖')
-  .action((source, destination) => {
-		// console.log(33333, program)
-    new CreateCommand(source, program)
+  .action((name, option) => {
+    new CreateCommand(name, option)
   });
 
 /**

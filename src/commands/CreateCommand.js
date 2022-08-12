@@ -6,9 +6,9 @@ const { RepoPath, Config } = require('../utils/config');
 const download = require('download-git-repo');
 const { prompt } = require('inquirer');
 class Creator {
-	constructor(source, destination, opts = {}) {
+	constructor(source, options, opts = {}) {
 		this.source = source;
-		this.cmdParams = parseCmdParams(destination);
+		this.cmdParams = parseCmdParams(options);
 		this.RepoMaps = Object.assign({
 			repo: RepoPath,
 			temp: path.join(__dirname, '../../__temp__'),

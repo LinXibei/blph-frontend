@@ -1,5 +1,4 @@
 const fs = require("fs-extra");
-const { exclude } = require("inquirer/lib/objects/separator");
 
 const isFunction = (val) => {
   return typeof val === 'function'

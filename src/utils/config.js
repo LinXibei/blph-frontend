@@ -15,4 +15,4 @@ exports.Config = {
 		message: '请输入新的项目名称'
 	}]
 }
-exports.RepoPath = 'https://github.com/LinXibei/vuecli-template.git';
+exports.RepoPath = 'LinXibei/vuecli-template.git';
