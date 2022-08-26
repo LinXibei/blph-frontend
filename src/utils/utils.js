@@ -75,7 +75,7 @@ exports.HasYarn = async () => {
     }
   });
 }
-Object.assign(exports, require("./spinner"));
+// Object.assign(exports, require("./spinner"));
 // import { chalk } from "chalk";
 // exports.chalk = require('chalk');
 // exports.execa = require('execa');

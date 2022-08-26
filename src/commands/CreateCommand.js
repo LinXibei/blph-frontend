@@ -1,5 +1,5 @@
-const { parseCmdParams, removeGitSomeFiles, hasYarn, install, start, logWithSpinner, stopSpinner } = require('../utils/utils');
-// const { logWithSpinner, stopSpinner } = require("../utils/spinner");
+const { parseCmdParams, removeGitSomeFiles, hasYarn, install, start } = require('../utils/utils');
+const { logWithSpinner, stopSpinner } = require("../utils/spinner");
 const ora = require('ora');
 const path = require('path');
 const fs = require('fs-extra');
@@ -8,6 +8,7 @@ const download = require('download-git-repo');
 const { prompt } = require('inquirer');
 const ReadFrameTemplate = require("./ReadFrameTemplate");
 const chalk = require("chalk");
+
 class Creator {
 	isYarn = true;
 	constructor(source, options, opts = {}) {
