@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const util = require('node:util');
 const exec = util.promisify(require('node:child_process').exec);
 const spwan = require("node:child_process").spawn;
+const execSync = require("node:child_process").execSync;
 const isFunction = (val) => {
   return typeof val === 'function'
 }
@@ -51,16 +52,17 @@ exports.start = (env, targetPath) => {
 	})
 }
 exports.exec = exec;
-exports.HasNpm = async () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      await exec("npm -v");
-      resolve();
-    } catch(e) {
-      console.log("当前环境没有安装npm");
-      reject(e);
-    }
-  });
+let _hasYarn;
+exports.hasYarn = () => {
+	if (_hasYarn !== null) {
+		return _hasYarn;
+	}
+	try {
+		execSync("yarn --version", { stdio: "ignore" });
+		return (_hasYarn = true);
+	} catch(e) {
+		return (_hasYarn = false);
+	}
 }
 exports.HasYarn = async () => {
   return new Promise(async (resolve, reject) => {
@@ -73,6 +75,7 @@ exports.HasYarn = async () => {
     }
   });
 }
+Object.assign(exports, require("./spinner"));
 // import { chalk } from "chalk";
 // exports.chalk = require('chalk');
 // exports.execa = require('execa');

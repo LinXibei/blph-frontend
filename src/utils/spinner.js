@@ -23,7 +23,6 @@ exports.logWidthSpinner = (symbol, msg) => {
   }
   spinner.start()
 }
-
 exports.stopSpinner = (persist) => {
   if (!spinner.isSpinning) {
     return;

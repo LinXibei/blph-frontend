@@ -1,4 +1,5 @@
-const { parseCmdParams, removeGitSomeFiles, HasYarn, install, start } = require('../utils/utils');
+const { parseCmdParams, removeGitSomeFiles, hasYarn, install, start, logWithSpinner, stopSpinner } = require('../utils/utils');
+// const { logWithSpinner, stopSpinner } = require("../utils/spinner");
 const ora = require('ora');
 const path = require('path');
 const fs = require('fs-extra');
@@ -8,6 +9,7 @@ const { prompt } = require('inquirer');
 const ReadFrameTemplate = require("./ReadFrameTemplate");
 const chalk = require("chalk");
 class Creator {
+	isYarn = true;
 	constructor(source, options, opts = {}) {
 		this.source = source;
 		this.cmdParams = parseCmdParams(options);
@@ -18,6 +20,8 @@ class Creator {
 		}, opts);
 		this.gitUser = {};
 		this.spinner = ora();
+		// 检查是否有yarn
+		this.isYarn = hasYarn();
 		this.init();
 	}
 	async init() {
@@ -27,9 +31,11 @@ class Creator {
 			// 选择框架语言
 			const frame = await this.checkFrames();
 			// 在对应文件夹创建相关文件
+			console.log(chalk.blue("正在下载项目模板..."));
+			logWithSpinner("↓", "模板正在下载中");
 			ReadFrameTemplate(frame, folderUrl);
-			// 检查是否有npm或者yarn
-			await this.hasNpmOrYarnEnv();
+			stopSpinner();
+			// console.log(chalk.blue("下载成功"))
 			// 拉取git上的项目模板
 			// await this.downloadRepo();
 			
@@ -40,7 +46,10 @@ class Creator {
 			// // 对我们的项目进行git初始化
 			// await this.initGit();
 			// 最后安装依赖、启动项目等！
+			console.log(chalk.blue("准备安装环境依赖..."));
+			logWithSpinner("正在安装环境依赖...");
 			await this.runApp(folderUrl);
+			stopSpinner();
 		} catch(e) {
 			console.error(e);
 			process.exit(1);
@@ -115,25 +124,25 @@ class Creator {
 	}
 	async runApp(folderUrl) {
 		try {
-			await install(folderUrl);
-			await start(folderUrl);
+			const env = this.isYarn ? "yarn" : "npm";
+			await install(env, folderUrl);
+			await start(env, folderUrl);
 		}	catch(e) {
 			const { name, message } = e;
-			console.log(22222, name, message);
-			// console.log(chalk.bgRed.white("安装脚手架以来失败"))
+			console.log(chalk.bgRed.white(`${name}安装失败: ${message}`))
 		}
 	}
-	async hasNpmOrYarnEnv() {
-		try {
-			await HasYarn();
-		} catch(e) {
-			const { message } = e;
-			if (message.indexOf("npm") > -1) {
-				// console.log(chalk.red("当前环境没有安装npm，请手动安装npm"))
-				console.error("当前环境没有安装npm，请手动安装npm");
-				process.exit(1);
-			}
-		}
-	}
+	// async hasNpmOrYarnEnv() {
+	// 	try {
+	// 		await HasYarn();
+	// 	} catch(e) {
+	// 		const { message } = e;
+	// 		if (message.indexOf("npm") > -1) {
+	// 			// console.log(chalk.red("当前环境没有安装npm，请手动安装npm"))
+	// 			console.error("当前环境没有安装npm，请手动安装npm");
+	// 			process.exit(1);
+	// 		}
+	// 	}
+	// }
 }
 module.exports = Creator;
