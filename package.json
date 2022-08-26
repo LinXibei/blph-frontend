@@ -20,10 +20,12 @@
     "commit-msg": "node verify-commit-msg.js"
   },
   "dependencies": {
-    "chalk": "^5.0.0",
+    "chalk": "^4.1.2",
     "commander": "^5.1.0",
     "download-git-repo": "^3.0.2",
     "ejs": "^3.1.8",
+    "elegant-spinner": "^3.0.0",
+    "execa": "^6.1.0",
     "fs-extra": "^10.0.0",
     "inquirer": "^8.2.0",
     "ora": "^5.4.1"

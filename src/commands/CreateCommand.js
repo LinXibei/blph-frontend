@@ -1,10 +1,12 @@
-const { parseCmdParams, removeGitSomeFiles } = require('../utils/utils')
+const { parseCmdParams, removeGitSomeFiles, HasYarn, install, start } = require('../utils/utils');
 const ora = require('ora');
 const path = require('path');
 const fs = require('fs-extra');
 const { RepoPath, Config } = require('../utils/config');
 const download = require('download-git-repo');
 const { prompt } = require('inquirer');
+const ReadFrameTemplate = require("./ReadFrameTemplate");
+const chalk = require("chalk");
 class Creator {
 	constructor(source, options, opts = {}) {
 		this.source = source;
@@ -21,17 +23,24 @@ class Creator {
 	async init() {
 		try {
 			// 检查目标路径文件是否正确
-			await this.checkFolderExist();
+			const folderUrl = await this.checkFolderExist();
+			// 选择框架语言
+			const frame = await this.checkFrames();
+			// 在对应文件夹创建相关文件
+			ReadFrameTemplate(frame, folderUrl);
+			// 检查是否有npm或者yarn
+			await this.hasNpmOrYarnEnv();
 			// 拉取git上的项目模板
-			await this.downloadRepo();
+			// await this.downloadRepo();
+			
 			// // 把下载下来的资源文件，拷贝到目标文件夹
-			await this.copyRepoFiles();
+			// await this.copyRepoFiles();
 			// // 根据用户git信息等，修改项目模板中package.json的一些信息
 			// await this.updatePackage();
 			// // 对我们的项目进行git初始化
 			// await this.initGit();
-			// // 最后安装依赖、启动项目等！
-			// await this.runApp();
+			// 最后安装依赖、启动项目等！
+			await this.runApp(folderUrl);
 		} catch(e) {
 			console.error(e);
 			process.exit(1);
@@ -42,26 +51,40 @@ class Creator {
 	genTargetPath(source) {
 		return path.resolve(process.cwd(), source)
 	}
+	async checkFrames() {
+		return new Promise(async (resolve, reject) => {
+			try {
+				const { frame } = await prompt(Config.frames);
+				return resolve(frame);
+			} catch(e) {
+				console.error(e);
+				process.exit(1);	
+			}
+		})
+	}
 	async checkFolderExist() {
 		return new Promise(async (resolve, reject) => {
 			const { target } = this.RepoMaps;
+			// blph-frontend create XXX -f 
+			// blph-frontend create XXXX --force
 			if (this.cmdParams.force) {
 				await fs.removeSync(target);
 				return resolve();
 			} 
 			try {
+				// 文件名称重复了
 				const isTarget = await fs.pathExistsSync(target);
-				if (!isTarget) return resolve();
+				if (!isTarget) return resolve(this.RepoMaps.target);
 				const { folder } = await prompt(Config.folderExits);
 
 				if (folder === 'newFolder') {
 					const { input } = await prompt(Config.rename);
 					this.source = input;
 					this.RepoMaps.target = this.genTargetPath(`./${input}`);
-					return resolve()
+					return resolve(this.RepoMaps.target)
 				} else if (folder === 'exits') {
 					await fs.removeSync(target);
-					return resolve();
+					return resolve(this.RepoMaps.target);
 				} else {
 					process.exit(1);
 				}
@@ -89,6 +112,28 @@ class Creator {
 	}
 	async updatePackage() {
 
+	}
+	async runApp(folderUrl) {
+		try {
+			await install(folderUrl);
+			await start(folderUrl);
+		}	catch(e) {
+			const { name, message } = e;
+			console.log(22222, name, message);
+			// console.log(chalk.bgRed.white("安装脚手架以来失败"))
+		}
+	}
+	async hasNpmOrYarnEnv() {
+		try {
+			await HasYarn();
+		} catch(e) {
+			const { message } = e;
+			if (message.indexOf("npm") > -1) {
+				// console.log(chalk.red("当前环境没有安装npm，请手动安装npm"))
+				console.error("当前环境没有安装npm，请手动安装npm");
+				process.exit(1);
+			}
+		}
 	}
 }
 module.exports = Creator;
