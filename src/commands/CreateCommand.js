@@ -1,4 +1,4 @@
-const { parseCmdParams, removeGitSomeFiles, hasYarn, install, start } = require('../utils/utils');
+const { parseCmdParams, removeGitSomeFiles, hasYarn, install, start, sleep } = require('../utils/utils');
 const { logWithSpinner, stopSpinner } = require("../utils/spinner");
 const ora = require('ora');
 const path = require('path');
@@ -21,8 +21,6 @@ class Creator {
 		}, opts);
 		this.gitUser = {};
 		this.spinner = ora();
-		// 检查是否有yarn
-		this.isYarn = hasYarn();
 		this.init();
 	}
 	async init() {
@@ -32,7 +30,6 @@ class Creator {
 			// 选择框架语言
 			const frame = await this.checkFrames();
 			// 在对应文件夹创建相关文件
-			console.log(chalk.blue("正在下载项目模板..."));
 			logWithSpinner("↓", "模板正在下载中");
 			ReadFrameTemplate(frame, folderUrl);
 			stopSpinner();
@@ -47,8 +44,8 @@ class Creator {
 			// // 对我们的项目进行git初始化
 			// await this.initGit();
 			// 最后安装依赖、启动项目等！
-			console.log(chalk.blue("准备安装环境依赖..."));
 			logWithSpinner("正在安装环境依赖...");
+			stopSpinner();	
 			await this.runApp(folderUrl);
 			stopSpinner();
 		} catch(e) {
@@ -125,9 +122,10 @@ class Creator {
 	}
 	async runApp(folderUrl) {
 		try {
-			const env = this.isYarn ? "yarn" : "npm";
+			const env = hasYarn() ? "yarn" : "npm";
+			logWithSpinner(" ");
 			await install(env, folderUrl);
-			await start(env, folderUrl);
+			// await start(env, folderUrl);
 		}	catch(e) {
 			const { name, message } = e;
 			console.log(chalk.bgRed.white(`${name}安装失败: ${message}`))

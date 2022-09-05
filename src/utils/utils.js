@@ -19,6 +19,11 @@ exports.parseCmdParams = (cmd) => {
 	});
 	return resOps;
 }
+exports.sleep = (timeout) => {
+  return new Promise((resolve => {
+    setTimeout(resolve, timeout);
+  }));
+}
 exports.removeGitSomeFiles = async (tmpPath, targetPath, excludes = []) => {
 	await fs.copySync(tmpPath, targetPath);
 	if (excludes && excludes.length) {
@@ -52,7 +57,7 @@ exports.start = (env, targetPath) => {
 	})
 }
 exports.exec = exec;
-let _hasYarn;
+let _hasYarn = null;
 exports.hasYarn = () => {
 	if (_hasYarn !== null) {
 		return _hasYarn;
